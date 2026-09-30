@@ -1,4 +1,5 @@
 import { useMemo, useState, type RefObject } from 'react';
+import { featureHidden } from '../brand';
 import type { SequenceLibraryOption } from './sequenceOptions';
 import type { PlayerRef } from '@remotion/player';
 import { theme } from '../theme';
@@ -121,6 +122,15 @@ interface LibraryPanelProps {
 
 const MAIN_TABS = ['我的素材', '序列', '资源库', '文字稿', '字幕', '技能'] as const;
 const SUB_TABS = ['MG 动画', '音效', '转场', '特效', '缩放', 'LUT'] as const;
+// Brand feature ids for the tabs (brand.json `hiddenFeatures`).
+const MAIN_TAB_FEATURE: Record<(typeof MAIN_TABS)[number], string> = {
+  '我的素材': 'library/my-media', '序列': 'library/sequences', '资源库': 'library/assets',
+  '文字稿': 'library/transcript', '字幕': 'library/captions', '技能': 'library/skills',
+};
+const SUB_TAB_FEATURE: Record<(typeof SUB_TABS)[number], string> = {
+  'MG 动画': 'library/assets/mg', '音效': 'library/assets/sfx', '转场': 'library/assets/transitions',
+  '特效': 'library/assets/fx', '缩放': 'library/assets/zoom', 'LUT': 'library/assets/lut',
+};
 function localizeDefaultSequenceName(name: string, t: ReturnType<typeof useT>): string {
   const match = /^序列 (\d+)$/.exec(name);
   return match ? t('序列 {n}', { n: match[1]! }) : name;
@@ -190,7 +200,7 @@ export function LibraryPanel({ semanticScopeId, templates, onAddTemplate, onAddA
   return (
     <section className="cc-library-panel">
       <div className="cc-main-tabs">
-        {MAIN_TABS.map((tab) => (
+        {MAIN_TABS.filter((tab) => !featureHidden(MAIN_TAB_FEATURE[tab])).map((tab) => (
           <button key={tab} onClick={() => { setExtensionOpen(false); setMainTab(tab); }}
             className={`cc-main-tab${mainTab === tab ? ' selected' : ''}`}>{t(tab)}</button>
         ))}
@@ -242,7 +252,7 @@ export function LibraryPanel({ semanticScopeId, templates, onAddTemplate, onAddA
       <>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, padding: '10px 12px 7px 16px', fontSize: 12, borderBottom: `0.5px solid ${theme.border}` }}>
         <div style={{ display: 'flex', gap: 14, minWidth: 0, overflowX: 'auto', whiteSpace: 'nowrap', flex: 1 }}>
-          {SUB_TABS.map((tab) => (
+          {SUB_TABS.filter((tab) => !featureHidden(SUB_TAB_FEATURE[tab])).map((tab) => (
             <button key={tab} onClick={() => setSubTab(tab)}
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: subTab === tab ? theme.text : theme.textDim, borderBottom: `2px solid ${subTab === tab ? theme.accent : 'transparent'}`, padding: '0 0 4px' }}>{t(tab)}</button>
           ))}

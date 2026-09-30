@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom';
+import { featureHidden } from '../brand';
 import { useEffect, useRef, type CSSProperties, type RefObject } from 'react';
 import type { MediaAsset, MediaFolder } from '../editor/types';
 import type { MusicAnalysisCardState } from '../audio/intelligence/useMusicAnalysisCards';
@@ -248,7 +249,7 @@ export function MusicModelsNotice({ cards }: { cards: ReadonlyMap<string, MusicA
   for (const state of cards.values()) {
     if (state.state === 'unavailable') { unavailable = true; break; }
   }
-  if (!unavailable) return null;
+  if (!unavailable || featureHidden('media/music-analysis-notice')) return null;
   return (
     <div className="cc-media-export-guide" role="note">
       {t('本地音乐分析模型未安装，素材卡片暂不显示分析入口。在 设置 → 本地 AI 中安装「节拍」与「音乐语义」模型包后即可分析。')}

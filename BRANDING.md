@@ -41,6 +41,22 @@ OPENCHATCUT_BRAND_DIR=/data/brand
 | `goals` | Editing goals shown ahead of the upstream starter chips ("Start with an editing goal") and in the quick actions menu. Each needs `label` and `prompt`; `description` and `icon` (a name from `src/components/icons.tsx`, default `sparkles`) are optional. Up to 24. Edit the file and reload the page. |
 | `models` | Extra model ids per provider id (`openai`, `anthropic`, ...) offered in the chat model picker after the saved model, for providers that have a key. |
 | `agentDefaults` | Starting values for the composer's agent settings (`mgTier`, `planMode`, `cacheMode`, `autonomousAcceptance`, `maxAcceptanceIterations`) used until the person changes them; they are stored per browser. |
+| `hiddenFeatures` | Feature ids to hide. An id hides itself and everything under `<id>/`. See the id list below. |
 | `css` | A stylesheet in the brand directory, appended after the app styles. Use it for font swaps (a later `@font-face` with the same family and weight replaces the app's) or small panel tweaks. |
 
 File names are served from the brand directory only; sub paths are refused. Every field is optional. The Settings dialog still shows the upstream version number and the licence, which the AGPL requires for a network service.
+
+## Feature ids for `hiddenFeatures`
+
+| Id | What it hides |
+|---|---|
+| `settings/<category>` | A whole Settings category: `agent`, `proxy`, `generation`, `assets`, `cloud`, `tools`, `interface`, `local`. |
+| `settings/<category>/<group>` | One capability group, for example `settings/generation/video`, `settings/assets/stock`, `settings/assets/transcription`, `settings/assets/voice`, `settings/cloud/storage`, `settings/tools/sandbox`, `settings/tools/web`. |
+| `settings/<category>/<group>/<page>` | One vendor page by its key, for example `settings/agent/llm/llm/codex`, `settings/agent/llm/llm/copilot`, `settings/agent/llm/llm/claude-code`, `settings/agent/llm/llm/xai-oauth`, `settings/generation/image/image/fal`. |
+| `library/<tab>` | A media panel tab: `my-media`, `sequences`, `assets`, `transcript`, `captions`, `skills`; and `library/assets/<sub>` for `mg`, `sfx`, `transitions`, `fx`, `zoom`, `lut`. |
+| `topbar/mcp`, `topbar/design-style`, `topbar/account` | Editor top bar buttons. |
+| `dashboard/mcp` | The MCP button on the dashboard. |
+| `chat/capability-banner` | The chat banner that lists unconfigured generation and transcription providers. |
+| `media/music-analysis-notice` | The media pool note about missing music analysis packs. |
+
+Provider backends that need a CLI login inside the server (Codex, Copilot, Claude Code, Grok subscription) never appear in the model picker unless logged in; hiding their Settings pages only removes the invitation.

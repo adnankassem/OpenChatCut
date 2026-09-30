@@ -6,6 +6,7 @@ import { FAL_MODELS } from '../../../shared/fal-models';
 // Security invariant: the secret field only has a Boolean status, and the value will never be backfilled; the model/routing field is a non-secret configuration,
 // The current value is echoed through the models channel of GET /api/keys (server-side NON_SECRET_NAMES whitelist).
 import { t } from '../../i18n/locale';
+import { featureHidden } from '../../brand';
 import {
   isLocalLlmProvider,
   llmProviderConfigNames,
@@ -308,6 +309,20 @@ export const SETTINGS_CATEGORIES: readonly SettingsCategory[] = [
 
 /** Temporary changes: field name in map = temporary storage; '' = clear explicitly (model fields will return to default).*/
 export type StagedValues = Record<string, string>;
+
+/** SETTINGS_CATEGORIES minus what the brand hides: ids are `settings/<category>`, `settings/<category>/<group>`,
+ * `settings/<category>/<group>/<vendor page key>` (page keys already look like `image/fal`). */
+export function visibleSettingsCategories(): readonly SettingsCategory[] {
+  return SETTINGS_CATEGORIES.flatMap((category) => {
+    if (featureHidden(`settings/${category.key}`)) return [];
+    const groups = category.groups.flatMap((group) => {
+      if (featureHidden(`settings/${category.key}/${group.key}`)) return [];
+      const vendors = group.vendors.filter((page) => !featureHidden(`settings/${category.key}/${group.key}/${page.key}`));
+      return vendors.length ? [{ ...group, vendors }] : [];
+    });
+    return groups.length ? [{ ...category, groups }] : [];
+  });
+}
 
 export function omitKey(obj: StagedValues, name: string): StagedValues {
   return Object.fromEntries(Object.entries(obj).filter(([k]) => k !== name));

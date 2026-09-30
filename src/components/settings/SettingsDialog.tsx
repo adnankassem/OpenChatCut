@@ -33,7 +33,7 @@ import {
   runUpstreamUpdateCommand,
 } from '../../ui/upstreamUpdateAction';
 import {
-  SETTINGS_CATEGORIES, buildPatch, categoryGroupStats, findGroup, groupConfigured,
+  buildPatch, categoryGroupStats, findGroup, groupConfigured, visibleSettingsCategories,
   modelValue, omitKey, savedMessage, vendorConfigured,
   type KeyStatusResponse, type SettingsCategory, type SettingsField, type SettingsGroup,
   type SettingsVendorPage, type StagedValues as Values,
@@ -185,13 +185,14 @@ function useTreeSelection(initialVendor?: string): {
 
 /** Open on a specific vendor page when the caller routed here (e.g. the chat's missing-model-pack button). */
 function seedSelection(initialVendor?: string): { group: SettingsGroup; vendor: SettingsVendorPage } {
-  for (const category of SETTINGS_CATEGORIES) {
+  const categories = visibleSettingsCategories();
+  for (const category of categories) {
     for (const group of category.groups) {
       const vendor = group.vendors.find((v) => v.key === initialVendor);
       if (vendor) return { group, vendor };
     }
   }
-  const first = SETTINGS_CATEGORIES[0].groups[0];
+  const first = categories[0].groups[0];
   return { group: first, vendor: first.vendors[0] };
 }
 
@@ -355,7 +356,7 @@ function CapabilityTree({
   return (
     <nav style={sidebar}>
       <div style={treeScroll}>
-        {SETTINGS_CATEGORIES.map((cat) => (
+        {visibleSettingsCategories().map((cat) => (
           <TreeCategory key={cat.key} category={cat} status={status} codexStatus={codexStatus}
             copilotStatus={copilotStatus} claudeCodeStatus={claudeCodeStatus}
             open={!collapsed.has(cat.key)} activeGroup={activeGroup}

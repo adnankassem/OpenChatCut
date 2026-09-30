@@ -44,6 +44,8 @@ export interface Brand {
   models?: Record<string, string[]>;
   /** Agent settings used until the person changes them in the composer settings (stored per browser). */
   agentDefaults?: Record<string, unknown>;
+  /** Feature ids to hide (see BRANDING.md); an id hides itself and everything under `<id>/`. */
+  hiddenFeatures?: string[];
 }
 
 export const UPSTREAM_PRODUCT_NAME = 'OpenChatCut';
@@ -120,6 +122,9 @@ export function parseBrand(raw: unknown): Brand {
     agentDefaults: input.agentDefaults && typeof input.agentDefaults === 'object' && !Array.isArray(input.agentDefaults)
       ? input.agentDefaults as Record<string, unknown>
       : undefined,
+    hiddenFeatures: Array.isArray(input.hiddenFeatures)
+      ? input.hiddenFeatures.map(str).filter((v): v is string => Boolean(v)).slice(0, 200)
+      : undefined,
   };
 }
 
@@ -168,6 +173,13 @@ function applyDocument(next: Brand): void {
     link.href = css;
     document.head.appendChild(link);
   }
+}
+
+/** True when the brand hides this feature id, or a parent id (`settings/generation` hides `settings/generation/image`). */
+export function featureHidden(id: string): boolean {
+  const hidden = brand.hiddenFeatures;
+  if (!hidden || hidden.length === 0) return false;
+  return hidden.some((entry) => id === entry || id.startsWith(`${entry}/`));
 }
 
 /** Fetch and apply the brand once. Any failure leaves the upstream defaults in place. */
