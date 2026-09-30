@@ -19,7 +19,8 @@ OPENCHATCUT_BRAND_DIR=/data/brand
   "accentDeep": "#c9740f",
   "onAccent": "#101010",
   "locale": "en",
-  "hideUpstreamLinks": true
+  "hideUpstreamLinks": true,
+  "tagline": ""
 }
 ```
 
@@ -32,5 +33,6 @@ OPENCHATCUT_BRAND_DIR=/data/brand
 | `accent`, `accentDeep`, `onAccent` | Hex colours layered over every skin (`--cc-accent`, `--cc-accent-deep`, `--cc-on-accent`). Keep `onAccent` at 4.5:1 or better against `accent`. |
 | `locale` | Interface language (`zh`, `en`, `it`, `ru`) used until the person picks one in the language switcher. |
 | `hideUpstreamLinks` | Hides the repository and contact links and the upstream release check. |
+| `tagline` | Subtitle under the wordmark in the chat header. An empty string removes it; when absent the upstream "Agent workspace" text stays. |
 
 File names are served from the brand directory only; sub paths are refused. Every field is optional. The Settings dialog still shows the upstream version number and the licence, which the AGPL requires for a network service.

@@ -23,6 +23,8 @@ export interface Brand {
   locale?: Locale;
   /** Hide the upstream repository, contact and release-check links. */
   hideUpstreamLinks?: boolean;
+  /** Subtitle under the wordmark in the chat header. Empty string hides it; absent keeps the upstream text. */
+  tagline?: string;
 }
 
 export const UPSTREAM_PRODUCT_NAME = 'OpenChatCut';
@@ -67,6 +69,7 @@ export function parseBrand(raw: unknown): Brand {
     onAccent: hex(input.onAccent),
     locale: locale && (ALL_LOCALES as readonly string[]).includes(locale) ? locale as Locale : undefined,
     hideUpstreamLinks: input.hideUpstreamLinks === true,
+    tagline: typeof input.tagline === 'string' ? input.tagline.trim() : undefined,
   };
 }
 

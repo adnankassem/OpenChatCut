@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { theme } from '../../theme';
 import { BrandMark, Icon, OpenChatCutWordmark } from '../icons';
-import { productName } from '../../brand';
+import { getBrand, productName } from '../../brand';
 import { AgentChangeLogMenu } from './AgentChangeLogMenu';
 import { AgentRunInspector } from './AgentRunInspector';
 import { ChatComposer } from './ChatComposer';
@@ -50,12 +50,13 @@ function CollapsedPanel({ controller }: { controller: ChatPanelController }) {
 
 function ChatHeader({ controller }: { controller: ChatPanelController }) {
   const { props, t, agent } = controller;
+  const tagline = getBrand().tagline ?? t('Agent 工作台');
   return <div className="cc-chat-header">
     <div className="cc-chat-brand">
       <BrandMark size={20} />
       <span className="cc-chat-brand-copy">
         <OpenChatCutWordmark width={102} />
-        <small>{t('Agent 工作台')}</small>
+        {tagline && <small>{tagline}</small>}
       </span>
     </div>
     <AgentRunInspector projectId={props.projectId} />
