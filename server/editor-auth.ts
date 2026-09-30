@@ -70,13 +70,20 @@ function requestEditorOrigin(req: IncomingMessage): string | null {
   const configured = process.env.OPENCHATCUT_EDITOR_URL?.trim();
   const expected = configuredEditorOrigin();
   if (configured && !expected) return null;
+  const trustedExtra = (process.env.OPENCHATCUT_TRUSTED_HOSTS ?? '').split(',').map((h) => h.trim().toLowerCase()).filter(Boolean);
+  const hostOnly = host.toLowerCase().replace(/:\d+$/, '');
+  const forwardedProto = headerValue(req, 'x-forwarded-proto');
   const protocol = expected
     ? new URL(expected).protocol
+    : trustedExtra.includes(hostOnly) && forwardedProto === 'https' ? 'https:'
     : req.socket instanceof TLSSocket ? 'https:' : 'http:';
   try {
     const actual = new URL(`${protocol}//${host}`);
     if (expected) return actual.origin === expected ? expected : null;
-    return LOCAL_EDITOR_HOSTS[actual.hostname.toLowerCase()] === true ? actual.origin : null;
+    const hostname = actual.hostname.toLowerCase();
+    // Local patch (PropelX eval, 26 Sep 2026): also trust hostnames fronted by a loopback reverse proxy.
+    const extra = (process.env.OPENCHATCUT_TRUSTED_HOSTS ?? '').split(',').map((h) => h.trim().toLowerCase()).filter(Boolean);
+    return LOCAL_EDITOR_HOSTS[hostname] === true || extra.includes(hostname) ? actual.origin : null;
   } catch {
     return null;
   }

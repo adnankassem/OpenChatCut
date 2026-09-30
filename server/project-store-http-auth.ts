@@ -34,7 +34,11 @@ function loopbackHost(value: string | undefined): value is string {
   const host = lower.startsWith('[')
     ? lower.slice(1, lower.indexOf(']'))
     : lower.split(':', 1)[0];
-  return host === 'localhost' || host === '127.0.0.1' || host === '::1';
+  if (host === 'localhost' || host === '127.0.0.1' || host === '::1') return true;
+  // Local patch (PropelX eval, 26 Sep 2026): trust extra public hostnames fronted by a
+  // loopback reverse proxy (Cloudflare tunnel / tailscale serve). Socket must still be loopback.
+  const extra = (process.env.OPENCHATCUT_TRUSTED_HOSTS ?? '').split(',').map((h) => h.trim().toLowerCase()).filter(Boolean);
+  return extra.includes(host);
 }
 
 function header(req: IncomingMessage, name: string): string | null {
