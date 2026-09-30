@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom';
 import { theme } from '../../theme';
 import { BrandMark, Icon, OpenChatCutWordmark } from '../icons';
 import { getBrand, productName } from '../../brand';
+import type { IconName } from '../icons';
 import { AgentChangeLogMenu } from './AgentChangeLogMenu';
 import { AgentRunInspector } from './AgentRunInspector';
 import { ChatComposer } from './ChatComposer';
@@ -78,7 +79,7 @@ function ChatOnboarding({ controller }: { controller: ChatPanelController }) {
     <h2>{t('从一个剪辑目标开始')}</h2>
     <p>{t('选择工作流，或直接描述你想得到的成片。')}</p>
     <div className="cc-chat-starter-list">
-      {EMPTY_PROJECT_STARTERS.map((starter) => (
+      {[...brandStarters(), ...EMPTY_PROJECT_STARTERS].map((starter) => (
         <button type="button" key={starter.label} onClick={() => {
           composer.setInput(t(starter.prompt));
           requestAnimationFrame(() => composer.taRef.current?.focus());
@@ -200,19 +201,27 @@ function MessageWorkspace({ controller }: { controller: ChatPanelController }) {
   </div>;
 }
 
+/** Brand goals (brand.json `goals`) go ahead of the upstream presets on both surfaces. */
+function brandStarters(): ReadonlyArray<{ label: string; description: string; prompt: string; icon: IconName }> {
+  return (getBrand().goals ?? []).map((goal) => ({
+    label: goal.label, description: goal.description ?? '', prompt: goal.prompt, icon: (goal.icon ?? 'sparkles') as IconName,
+  }));
+}
+
 function QuickActionSelect({ controller }: { controller: ChatPanelController }) {
   const { agent, composer, t } = controller;
+  const actions = [...brandStarters(), ...QUICK_ACTIONS];
   return <select aria-label={t('快速操作')} value="" disabled={agent.running}
     onChange={(event) => {
       if (!event.target.value) return;
-      const action = QUICK_ACTIONS[Number(event.target.value)];
+      const action = actions[Number(event.target.value)];
       if (!action) return;
       composer.setInput(t(action.prompt));
       requestAnimationFrame(() => composer.taRef.current?.focus());
     }}
     style={{ width: '100%', marginBottom: 8, border: `0.5px solid ${theme.border}`, borderRadius: 6, padding: '6px 8px', background: theme.panelAlt, color: theme.text, fontSize: 12 }}>
     <option value="">{t('快速操作…')}</option>
-    {QUICK_ACTIONS.map((action, index) => (
+    {actions.map((action, index) => (
       <option key={action.label} value={index}>{t(action.label)}</option>
     ))}
   </select>;

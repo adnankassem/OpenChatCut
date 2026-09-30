@@ -4,6 +4,17 @@
 // colour, default language). Components read the rest through `getBrand()`.
 import { ALL_LOCALES, setLocale, type Locale } from './i18n/locale';
 
+export interface BrandGoal {
+  /** Chip label. */
+  label: string;
+  /** One line under the label on the starter chip. */
+  description?: string;
+  /** Text placed in the composer when the chip is clicked. */
+  prompt: string;
+  /** Icon name from src/components/icons.tsx; defaults to sparkles. */
+  icon?: string;
+}
+
 export interface Brand {
   /** Product name shown wherever the upstream name appears (wordmark fallback, labels). */
   name?: string;
@@ -27,6 +38,8 @@ export interface Brand {
   tagline?: string;
   /** Extra stylesheet file in the brand directory, loaded after the app styles (fonts, panel tweaks). */
   css?: string;
+  /** Editing goals shown ahead of the upstream starter chips and quick actions. */
+  goals?: BrandGoal[];
 }
 
 export const UPSTREAM_PRODUCT_NAME = 'OpenChatCut';
@@ -55,6 +68,20 @@ function hex(value: unknown): string | undefined {
   return text && HEX.test(text) ? text : undefined;
 }
 
+function parseGoals(raw: unknown): BrandGoal[] {
+  if (!Array.isArray(raw)) return [];
+  const goals: BrandGoal[] = [];
+  for (const item of raw.slice(0, 24)) {
+    if (!item || typeof item !== 'object') continue;
+    const goal = item as Record<string, unknown>;
+    const label = str(goal.label);
+    const prompt = str(goal.prompt);
+    if (!label || !prompt) continue;
+    goals.push({ label, prompt, description: str(goal.description), icon: str(goal.icon) });
+  }
+  return goals;
+}
+
 export function parseBrand(raw: unknown): Brand {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
   const input = raw as Record<string, unknown>;
@@ -73,6 +100,7 @@ export function parseBrand(raw: unknown): Brand {
     hideUpstreamLinks: input.hideUpstreamLinks === true,
     tagline: typeof input.tagline === 'string' ? input.tagline.trim() : undefined,
     css: str(input.css),
+    goals: parseGoals(input.goals),
   };
 }
 

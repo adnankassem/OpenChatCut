@@ -21,7 +21,10 @@ OPENCHATCUT_BRAND_DIR=/data/brand
   "locale": "en",
   "hideUpstreamLinks": true,
   "tagline": "",
-  "css": "brand.css"
+  "css": "brand.css",
+  "goals": [
+    { "label": "Tighten this cut", "description": "Drop pauses and repeated takes", "prompt": "Tighten this cut: drop pauses and repeated takes, keep the best take of each point.", "icon": "scissors" }
+  ]
 }
 ```
 
@@ -35,6 +38,7 @@ OPENCHATCUT_BRAND_DIR=/data/brand
 | `locale` | Interface language (`zh`, `en`, `it`, `ru`) used until the person picks one in the language switcher. |
 | `hideUpstreamLinks` | Hides the repository and contact links and the upstream release check. |
 | `tagline` | Subtitle under the wordmark in the chat header. An empty string removes it; when absent the upstream "Agent workspace" text stays. |
+| `goals` | Editing goals shown ahead of the upstream starter chips ("Start with an editing goal") and in the quick actions menu. Each needs `label` and `prompt`; `description` and `icon` (a name from `src/components/icons.tsx`, default `sparkles`) are optional. Up to 24. Edit the file and reload the page. |
 | `css` | A stylesheet in the brand directory, appended after the app styles. Use it for font swaps (a later `@font-face` with the same family and weight replaces the app's) or small panel tweaks. |
 
 File names are served from the brand directory only; sub paths are refused. Every field is optional. The Settings dialog still shows the upstream version number and the licence, which the AGPL requires for a network service.
