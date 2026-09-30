@@ -2,6 +2,7 @@ import {
   isTranscriptionProviderId,
   type TranscriptionProviderId,
 } from '../../transcript/types';
+import { getBrand } from '../../brand';
 // Agent settings that actually change code paths (not soft prompt hints).
 // Ask/YOLO controls proposal application and prompt behavior; built-in tools
 // execute directly in both modes.
@@ -54,8 +55,8 @@ export function normalizeAcceptanceIterations(value: unknown): number {
 export function loadAgentSettings(): AgentSettings {
   try {
     const raw = localStorage.getItem(KEY);
-    if (!raw) return { ...DEFAULT_AGENT_SETTINGS };
-    const parsed = JSON.parse(raw) as Partial<AgentSettings>;
+    // Nothing stored yet: start from the brand's defaults (brand.json `agentDefaults`), if any.
+    const parsed = (raw ? JSON.parse(raw) : { ...getBrand().agentDefaults }) as Partial<AgentSettings>;
     return {
       mgTier: MG_TIERS.includes(parsed.mgTier as MgTier) ? (parsed.mgTier as MgTier) : DEFAULT_AGENT_SETTINGS.mgTier,
       planMode: parsed.planMode === true,

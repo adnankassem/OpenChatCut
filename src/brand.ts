@@ -40,6 +40,10 @@ export interface Brand {
   css?: string;
   /** Editing goals shown ahead of the upstream starter chips and quick actions. */
   goals?: BrandGoal[];
+  /** Extra model ids offered in the chat model picker per provider id (for example `openai`), after the saved model. */
+  models?: Record<string, string[]>;
+  /** Agent settings used until the person changes them in the composer settings (stored per browser). */
+  agentDefaults?: Record<string, unknown>;
 }
 
 export const UPSTREAM_PRODUCT_NAME = 'OpenChatCut';
@@ -66,6 +70,17 @@ function str(value: unknown): string | undefined {
 function hex(value: unknown): string | undefined {
   const text = str(value);
   return text && HEX.test(text) ? text : undefined;
+}
+
+function parseModels(raw: unknown): Record<string, string[]> {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const out: Record<string, string[]> = {};
+  for (const [provider, list] of Object.entries(raw as Record<string, unknown>)) {
+    if (!Array.isArray(list)) continue;
+    const ids = list.map(str).filter((v): v is string => Boolean(v)).slice(0, 16);
+    if (ids.length) out[provider.trim().toLowerCase()] = ids;
+  }
+  return out;
 }
 
 function parseGoals(raw: unknown): BrandGoal[] {
@@ -101,6 +116,10 @@ export function parseBrand(raw: unknown): Brand {
     tagline: typeof input.tagline === 'string' ? input.tagline.trim() : undefined,
     css: str(input.css),
     goals: parseGoals(input.goals),
+    models: parseModels(input.models),
+    agentDefaults: input.agentDefaults && typeof input.agentDefaults === 'object' && !Array.isArray(input.agentDefaults)
+      ? input.agentDefaults as Record<string, unknown>
+      : undefined,
   };
 }
 

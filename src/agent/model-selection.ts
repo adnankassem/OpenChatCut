@@ -1,4 +1,5 @@
 import type { CodexAgentModel, CodexAgentStatus } from '../../shared/codex-agent';
+import { getBrand } from '../brand';
 import type { CopilotAgentModel, CopilotAgentStatus } from '../../shared/copilot-agent';
 import type { ClaudeCodeAgentModel, ClaudeCodeAgentStatus } from '../../shared/claude-code-agent';
 import { loadAgentModelPref, saveAgentModelPref } from '../persist/sessionPrefs';
@@ -104,20 +105,24 @@ function apiChoices(
     const savedModel = models[names.model]?.trim() ?? '';
     if (isLocalLlmProvider(preset.id) ? !savedModel : !keys[names.apiKey]?.configured) return [];
     const model = savedModel || defaultModelForProvider(preset.id);
-    const identity: ModelIdentity = { backend: 'api', provider: preset.id, modelId: model };
-    return [{
-      id: `${preset.id}:${model}`,
-      backend: 'api',
-      provider: preset.id,
-      providerLabel: preset.label,
-      model,
-      ...(preset.id === 'openai'
-        ? { openAiApiMode: models.LLM_OPENAI_API_MODE === 'chat' ? 'chat' : 'responses' }
-        : preset.id === 'xai-oauth'
-          ? { openAiApiMode: 'responses' as const }
-          : {}),
-      capabilities: modelCapabilities(identity),
-    }];
+    // The saved model first, then any extra ids the brand offers for this provider (brand.json `models`).
+    const extras = (getBrand().models?.[preset.id] ?? []).filter((id) => id !== model);
+    return [model, ...new Set(extras)].map((modelId): AgentModelChoice => {
+      const identity: ModelIdentity = { backend: 'api', provider: preset.id, modelId };
+      return {
+        id: `${preset.id}:${modelId}`,
+        backend: 'api',
+        provider: preset.id,
+        providerLabel: preset.label,
+        model: modelId,
+        ...(preset.id === 'openai'
+          ? { openAiApiMode: models.LLM_OPENAI_API_MODE === 'chat' ? 'chat' : 'responses' }
+          : preset.id === 'xai-oauth'
+            ? { openAiApiMode: 'responses' as const }
+            : {}),
+        capabilities: modelCapabilities(identity),
+      };
+    });
   });
 }
 
