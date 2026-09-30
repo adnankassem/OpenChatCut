@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type Dispatch, type Re
 import { useT } from '../i18n/locale';
 import { theme } from '../theme';
 import { Icon } from './icons';
+import { getBrand } from '../brand';
 
 const PROJECT_REPOSITORY_URL = 'https://github.com/0xsline/OpenChatCut';
 const AUTHOR_EMAIL = 'hl2535771@gmail.com';
@@ -34,6 +35,7 @@ export function DashboardHeaderLinks() {
   const [contactOpen, setContactOpen] = useState(false);
   const contactRef = useRef<HTMLSpanElement>(null);
   useDismissablePopover(contactOpen, contactRef, setContactOpen);
+  if (getBrand().hideUpstreamLinks) return null;
 
   return (
     <span ref={contactRef} style={linkGroup}>

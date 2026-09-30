@@ -33,3 +33,7 @@ __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=edit.example.com,box.tailnet.ts.net
 The second variable is Vite's own host allowlist for the dev server; both are needed.
 
 Deployment notes (Docker image, compose, Cloudflare Access) live in the PropelX run-book repo, not here.
+
+## Branch `propelx/urbn-brand` (on top of `propelx/reverse-proxy`)
+
+Adds an optional white-label layer, documented in `BRANDING.md`: `OPENCHATCUT_BRAND_DIR` names a directory served at `/brand/*` (`server/branding.ts`); the client reads `/brand/brand.json` before the first render (`src/brand.ts`) and applies product name, tab title, favicon and brand mark, wordmark image, accent colour, default interface language, and whether the upstream repository, contact and release-check links are shown. Components touched: `icons.tsx` (`BrandMark`, `OpenChatCutWordmark`), `ChatPanelView.tsx` (collapsed rail label), `DashboardHeaderLinks.tsx`, `Dashboard.tsx`, `main.tsx`, and the plugin list in `config/vite.config.ts`. No brand strings live in the code; with the variable unset the behaviour is identical to the branch below it.

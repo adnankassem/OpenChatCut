@@ -1,5 +1,6 @@
 // Monochrome line icons (lucide-style, 24×24 stroke) for the editor
 // toolbar/track-header glyphs — replaces emoji for a consistent editor chrome.
+import { brandAssetUrl, getBrand, productName } from '../brand';
 
 export type IconName =
   | 'plus' | 'cursor' | 'trim' | 'rateStretch' | 'blade' | 'scissors' | 'magnet' | 'mic' | 'chevronDown' | 'check' | 'brush' | 'cloud' | 'insert'
@@ -134,13 +135,24 @@ export function Icon({ name, size = 16, color = 'currentColor', strokeWidth = 1.
 /** Brand logo: dialogue bubble + play button (conversational video cutting). Bubble = accent color, play button = onAccent
  * (Skin Discipline Guaranteed ≥4.5 vs.). Use this when replacing sparkles before wordmark. */
 export function BrandMark({ size = 16 }: { size?: number }) {
+  const src = brandAssetUrl(getBrand().icon) ?? '/openchatcut-icon.png';
   return (
-    <img src="/openchatcut-icon.png" alt="" aria-hidden width={size} height={size} style={{ display: 'block' }} />
+    <img src={src} alt="" aria-hidden width={size} height={size} style={{ display: 'block' }} />
   );
 }
 
-/** OpenChatCut word mark: OPEN reverse white badge + Chat Cut solid word mark. */
+/** Word mark. A configured brand renders its own image (or its name as text); the
+ * upstream mark is OPEN reverse white badge + Chat Cut solid word mark. */
 export function OpenChatCutWordmark({ width = 126 }: { width?: number }) {
+  const brand = getBrand();
+  const image = brandAssetUrl(brand.wordmark);
+  if (image) {
+    const w = brand.wordmarkWidth ?? width;
+    return <img src={image} alt={productName()} style={{ display: 'block', flexShrink: 0, height: w / 4, width: 'auto' }} />;
+  }
+  if (brand.name) {
+    return <span aria-label={productName()} style={{ fontWeight: 720, fontSize: 15, letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>{productName()}</span>;
+  }
   return (
     <svg
       aria-label="OpenChatCut"

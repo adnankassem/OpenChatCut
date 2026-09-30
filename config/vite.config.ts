@@ -6,6 +6,7 @@ import { resolve } from 'node:path';
 import { serverPlugins } from '../server/plugins/index.ts';
 import { seedKeystore, getKey } from '../server/keystore.ts';
 import { productAssetsPlugin } from '../server/product-assets.ts';
+import { brandingPlugin } from '../server/branding.ts';
 import { runtimeProfile } from '../server/runtime-profile.ts';
 
 const appPackage = JSON.parse(readFileSync('package.json', 'utf8')) as { version?: unknown };
@@ -148,7 +149,7 @@ export default defineConfig(({ mode }) => {
     // public/ = user runtime only (media/uploads). Product static files live in assets/
     // and are served/copied by productAssetsPlugin (URLs unchanged: /fonts, /thumbnails, …).
     publicDir: 'public',
-    plugins: [serveOrtWasmLoader(), react(), productAssetsPlugin(), excludeUserMediaFromBuild(), ...serverPlugins()],
+    plugins: [serveOrtWasmLoader(), react(), productAssetsPlugin(), brandingPlugin(), excludeUserMediaFromBuild(), ...serverPlugins()],
     server: {
       port: 5199,
       strictPort: true,

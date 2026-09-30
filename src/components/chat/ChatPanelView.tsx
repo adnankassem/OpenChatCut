@@ -1,6 +1,7 @@
 import { createPortal } from 'react-dom';
 import { theme } from '../../theme';
 import { BrandMark, Icon, OpenChatCutWordmark } from '../icons';
+import { productName } from '../../brand';
 import { AgentChangeLogMenu } from './AgentChangeLogMenu';
 import { AgentRunInspector } from './AgentRunInspector';
 import { ChatComposer } from './ChatComposer';
@@ -42,7 +43,7 @@ function CollapsedPanel({ controller }: { controller: ChatPanelController }) {
         style={{ background: 'none', border: 'none', color: theme.textDim, cursor: 'pointer', fontSize: 14 }}>
         <span style={{ transform: 'rotate(-90deg)', display: 'inline-flex' }}><Icon name="chevronDown" size={14} /></span>
       </button>
-      <div className="cc-chat-collapsed-brand">OpenChatCut</div>
+      <div className="cc-chat-collapsed-brand">{productName()}</div>
     </aside>
   </>;
 }
