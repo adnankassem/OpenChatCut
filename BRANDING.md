@@ -20,7 +20,8 @@ OPENCHATCUT_BRAND_DIR=/data/brand
   "onAccent": "#101010",
   "locale": "en",
   "hideUpstreamLinks": true,
-  "tagline": ""
+  "tagline": "",
+  "css": "brand.css"
 }
 ```
 
@@ -34,5 +35,6 @@ OPENCHATCUT_BRAND_DIR=/data/brand
 | `locale` | Interface language (`zh`, `en`, `it`, `ru`) used until the person picks one in the language switcher. |
 | `hideUpstreamLinks` | Hides the repository and contact links and the upstream release check. |
 | `tagline` | Subtitle under the wordmark in the chat header. An empty string removes it; when absent the upstream "Agent workspace" text stays. |
+| `css` | A stylesheet in the brand directory, appended after the app styles. Use it for font swaps (a later `@font-face` with the same family and weight replaces the app's) or small panel tweaks. |
 
 File names are served from the brand directory only; sub paths are refused. Every field is optional. The Settings dialog still shows the upstream version number and the licence, which the AGPL requires for a network service.

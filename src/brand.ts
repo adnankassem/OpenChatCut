@@ -25,6 +25,8 @@ export interface Brand {
   hideUpstreamLinks?: boolean;
   /** Subtitle under the wordmark in the chat header. Empty string hides it; absent keeps the upstream text. */
   tagline?: string;
+  /** Extra stylesheet file in the brand directory, loaded after the app styles (fonts, panel tweaks). */
+  css?: string;
 }
 
 export const UPSTREAM_PRODUCT_NAME = 'OpenChatCut';
@@ -70,6 +72,7 @@ export function parseBrand(raw: unknown): Brand {
     locale: locale && (ALL_LOCALES as readonly string[]).includes(locale) ? locale as Locale : undefined,
     hideUpstreamLinks: input.hideUpstreamLinks === true,
     tagline: typeof input.tagline === 'string' ? input.tagline.trim() : undefined,
+    css: str(input.css),
   };
 }
 
@@ -110,6 +113,14 @@ function applyDocument(next: Brand): void {
     if (!stored) setLocale(next.locale);
   }
   applyAccent(next);
+  const css = brandAssetUrl(next.css);
+  if (css && !document.getElementById('cc-brand-css')) {
+    const link = document.createElement('link');
+    link.id = 'cc-brand-css';
+    link.rel = 'stylesheet';
+    link.href = css;
+    document.head.appendChild(link);
+  }
 }
 
 /** Fetch and apply the brand once. Any failure leaves the upstream defaults in place. */

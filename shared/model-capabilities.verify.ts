@@ -20,7 +20,7 @@ assert.equal(exact.contextWindowTokens.source, 'catalog', 'catalog source, not f
 const snapshot = resolveModelCapabilities(identity('qwen', 'qwen3.7-plus-2026-05-26'));
 assert.equal(snapshot.contextWindowTokens.value, 1_000_000, 'snapshot matches its base model');
 assert.equal(snapshot.contextWindowTokens.source, 'catalog', 'snapshot still counts as catalog');
-assert.equal(snapshot.maxOutputTokens.value, 65_536, 'snapshot inherits max output');
+assert.equal(snapshot.maxOutputTokens.value, 131_072, 'snapshot inherits max output');
 assert.equal(snapshot.supportsImages.value, true, 'snapshot inherits image support');
 
 // Longest prefix wins when several bases share the prefix.

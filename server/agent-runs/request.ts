@@ -71,7 +71,26 @@ function validatedMessages(value: unknown): ValidatedCreateInput['messages'] {
   });
 }
 
+/**
+ * Server-side runs call the LLM proxy on this same server. Behind a reverse
+ * proxy the browser's Host is the public name, which resolves to the proxy's
+ * TLS port, not to Vite, so `OPENCHATCUT_SELF_ORIGIN` (for example
+ * `http://127.0.0.1:5199`) pins the loopback origin those calls use.
+ */
+export function selfOrigin(): string | null {
+  const configured = process.env.OPENCHATCUT_SELF_ORIGIN?.trim();
+  if (!configured) return null;
+  try {
+    const url = new URL(configured);
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.origin : null;
+  } catch {
+    return null;
+  }
+}
+
 export function requestOrigin(req: IncomingMessage): string | null {
+  const pinned = selfOrigin();
+  if (pinned) return pinned;
   const host = req.headers.host;
   if (!host || /[/\\@?#,\s]/.test(host)) return null;
   try {
