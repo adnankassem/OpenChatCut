@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { featureHidden } from '../brand';
 import type { PlayerRef } from '@remotion/player';
 import type { TimelineItem, TrackId } from '../editor/types';
 import { emitSelectionRef, transcriptRefFromDomSelection, useSelectionRefMode } from '../agent/selection-refs';
@@ -284,7 +285,7 @@ export function TranscriptPanel({
               <p className="cc-tx-muted">
                 {t('该轨只有背景音乐类素材。打开「包含疑似背景音乐」或换到配音轨。')}
               </p>
-            ) : (
+            ) : featureHidden('transcript/transcribe') ? null : (
               <button type="button" onClick={() => void transcribeTrack()} disabled={busy} className="cc-tx-btn primary lg">
                 {busy ? (progressNote ?? t('转写中…')) : t('转写 {alias}（{n} 段）', { alias: activeTrack?.alias ?? '', n: clips.length })}
               </button>
@@ -335,9 +336,9 @@ export function TranscriptPanel({
                       ›
                     </button>
                   </div>
-                  <button type="button" className="cc-tx-btn sm" disabled={busy} onClick={() => void transcribeTrack()}>
+                  {!featureHidden('transcript/transcribe') && <button type="button" className="cc-tx-btn sm" disabled={busy} onClick={() => void transcribeTrack()}>
                     {busy ? '…' : t('重新转写')}
-                  </button>
+                  </button>}
                 </div>
                 {clips.length > MANY_CLIPS && (
                   <label className="cc-tx-nav-mode">

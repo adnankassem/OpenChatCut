@@ -56,6 +56,7 @@ File names are served from the brand directory only; sub paths are refused. Ever
 | `library/<tab>` | A media panel tab: `my-media`, `sequences`, `assets`, `transcript`, `captions`, `skills`; and `library/assets/<sub>` for `mg`, `sfx`, `transitions`, `fx`, `zoom`, `lut`. |
 | `topbar/mcp`, `topbar/design-style`, `topbar/account` | Editor top bar buttons. |
 | `dashboard/mcp` | The MCP button on the dashboard. |
+| `transcript/transcribe` | The transcribe buttons (media cards, media menu, Transcript tab) while the Transcript tab, its word editing and the Captions panel stay. |
 | `chat/capability-banner` | The chat banner that lists unconfigured generation and transcription providers. |
 | `media/music-analysis-notice` | The media pool note about missing music analysis packs. |
 

@@ -1,4 +1,5 @@
 import type { Dispatch, RefObject, SetStateAction } from 'react';
+import { featureHidden } from '../brand';
 import type { MediaAsset, MediaFolder } from '../editor/types';
 import type { AssetMenuPosition } from './useAssetMenu';
 import type { MediaSortKey, MediaTypeFilter } from './mediaPoolFilter';
@@ -117,7 +118,7 @@ function MediaAssetMenu({ asset: context }: Pick<MediaPoolMenusProps, 'asset'>) 
     onMove={(folderId) => { if (context.assetIds.length) context.move(context.assetIds, folderId); close(); }}
     onAddTimeline={timelineAssets.length ? () => { if (context.addToTimeline) context.addToTimeline(timelineAssets); else timelineAssets.forEach(context.addAsset); close(); } : undefined}
     onAddChat={() => { addAssetsToChat(context.assets, context.addToChat); close(); }}
-    onTranscribe={context.assets.some((item) => assetCanTranscribe(item.kind, item.transcribeStatus))
+    onTranscribe={!featureHidden('transcript/transcribe') && context.assets.some((item) => assetCanTranscribe(item.kind, item.transcribeStatus))
       ? () => { context.transcribe(context.assets); close(); }
       : undefined}
     onViewTranscript={asset && (asset.transcript?.length ?? 0) > 0

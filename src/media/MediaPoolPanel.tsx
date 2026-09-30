@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { featureHidden } from '../brand';
 import { useMusicAnalysisCards } from '../audio/intelligence/useMusicAnalysisCards';
 import { useT } from '../i18n/locale';
 import type { MediaAsset, MediaAssetRelinkPatch, MediaFolder } from '../editor/types';
@@ -423,7 +424,7 @@ export function MediaPoolPanel({
         onToggleSelected={toggleSelected}
         onSetSelected={(ids) => setSelected(new Set(ids))}
         onSetFavorite={onSetFavorite}
-        onTranscribe={(id) => {
+        onTranscribe={featureHidden('transcript/transcribe') ? undefined : (id) => {
           const target = assets.find((asset) => asset.id === id);
           if (target) onTranscribe(target);
         }}
